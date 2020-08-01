@@ -83,7 +83,9 @@ public class AlertRabbit {
             System.out.println("Rabbit runs here ...");
             List<Long> store = (List<Long>) context.getJobDetail().getJobDataMap().get("store");
             store.add(System.currentTimeMillis());
-            Connection connection = (Connection) context.getJobDetail().getJobDataMap().get("connection");
+            Connection connection = (Connection) context.getJobDetail()
+                    .getJobDataMap()
+                    .get("connection");
             try (PreparedStatement ps = connection.prepareStatement(
                     "insert into rabbit(create_date) values(?);")) {
                 ps.setTimestamp(1, new Timestamp(Calendar.getInstance().getTime().getTime()));
