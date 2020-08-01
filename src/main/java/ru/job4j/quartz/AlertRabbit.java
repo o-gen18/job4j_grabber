@@ -13,8 +13,7 @@ import static org.quartz.SimpleScheduleBuilder.*;
 
 public class AlertRabbit {
     public static void main(String[] args) {
-        String pathToProperty = "C:\\projects\\job4j_grabber\\src\\main\\resources\\rabbit.properties";
-        try (BufferedReader in = new BufferedReader(new FileReader(pathToProperty))) {
+        try (BufferedReader in = new BufferedReader(new FileReader("./src/main/resources/rabbit.properties"))) {
             Map<String, String> properties= new HashMap<>();
             in.lines().forEach(line -> {
                 int delimiter = line.indexOf("=");
