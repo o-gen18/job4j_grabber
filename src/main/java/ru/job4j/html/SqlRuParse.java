@@ -73,17 +73,21 @@ public class SqlRuParse {
 
     public static void main(String[] args) throws Exception {
         SqlRuParse sqlRuParse = new SqlRuParse();
-        Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
-        Elements row = doc.select(".postslisttopic");
-        Elements dates = doc.select(".altCol");
-        for (int i = 0, k = 1; i < row.size(); i++, k += 2) {
-            Element tdPosts = row.get(i);
-            Element href = tdPosts.child(0);
-            Element date = dates.get(k);
-            System.out.println(href.attr("href"));
-            System.out.println(href.text());
-            Calendar javaDate = sqlRuParse.dateConvert(date.text());
-            System.out.println(javaDate.getTime());
+        for (int p = 1; p <= 5; p++) {
+            String page = String.valueOf(p);
+            String url = "https://www.sql.ru/forum/job-offers/".concat(page);
+            Document doc = Jsoup.connect(url).get();
+            Elements row = doc.select(".postslisttopic");
+            Elements dates = doc.select(".altCol");
+            for (int i = 0, k = 1; i < row.size(); i++, k += 2) {
+                Element tdPosts = row.get(i);
+                Element href = tdPosts.child(0);
+                Element date = dates.get(k);
+                System.out.println(href.attr("href"));
+                System.out.println(href.text());
+                Calendar javaDate = sqlRuParse.dateConvert(date.text());
+                System.out.println(javaDate.getTime());
+            }
         }
     }
 }
