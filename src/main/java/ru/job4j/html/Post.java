@@ -8,6 +8,8 @@ public class Post {
 
     private String vacancyURL;
 
+    private String vacancyDesc;
+
     private String authorName;
 
     private String authorURL;
@@ -28,6 +30,14 @@ public class Post {
 
     public void setVacancyURL(String vacancyURL) {
         this.vacancyURL = vacancyURL;
+    }
+
+    public String getVacancyDesc() {
+        return vacancyDesc;
+    }
+
+    public void setVacancyDesc(String vacancyDesc) {
+        this.vacancyDesc = vacancyDesc;
     }
 
     public String getAuthorName() {
