@@ -10,42 +10,42 @@ import java.util.Map;
 
 public class SqlRuParse {
 
-    private static final Map<String, Integer> MONTHS = new java.util.HashMap<>();
+    private final Map<String, Integer> months = new java.util.HashMap<>();
 
-    private static void fillingMap() {
-        MONTHS.put("янв", 0);
-        MONTHS.put("фев", 1);
-        MONTHS.put("мар", 2);
-        MONTHS.put("апр", 3);
-        MONTHS.put("май", 4);
-        MONTHS.put("июн", 5);
-        MONTHS.put("июл", 6);
-        MONTHS.put("авг", 7);
-        MONTHS.put("сен", 8);
-        MONTHS.put("окт", 9);
-        MONTHS.put("ноя", 10);
-        MONTHS.put("дек", 11);
-        MONTHS.put("сегодня", Calendar.DATE);
-        MONTHS.put("вчера", Calendar.DATE - 1);
+    public SqlRuParse() {
+        fillingMap();
     }
 
-    public static void main(String[] args) throws Exception {
-        fillingMap();
-        Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
-        Elements row = doc.select(".postslisttopic");
-        Elements dates = doc.select(".altCol");
-        for (int i = 0, k = 1; i < row.size(); i++, k += 2) {
-            Element tdPosts = row.get(i);
-            Element href = tdPosts.child(0);
-            Element date = dates.get(k);
-            System.out.println(href.attr("href"));
-            System.out.println(href.text());
-           Calendar javaDate = dateConvert(date.text());
-            System.out.println(javaDate.getTime());
+    private void fillingMap() {
+        Calendar today = Calendar.getInstance();
+        months.put("янв", 0);
+        months.put("фев", 1);
+        months.put("мар", 2);
+        months.put("апр", 3);
+        months.put("май", 4);
+        months.put("июн", 5);
+        months.put("июл", 6);
+        months.put("авг", 7);
+        months.put("сен", 8);
+        months.put("окт", 9);
+        months.put("ноя", 10);
+        months.put("дек", 11);
+        months.put("сегодня", today.get(Calendar.DAY_OF_MONTH));
+        months.put("вчера", today.get(Calendar.DAY_OF_MONTH) - 1);
+    }
+
+    private int getTrueYear(int shortYear, Calendar today) {
+        int previousCentury = 1900;
+        int thisCentury = 2000;
+        int thisYear = today.get(Calendar.YEAR);
+        if (thisYear - shortYear >= thisCentury) {
+            return thisCentury + shortYear;
+        } else {
+            return previousCentury + shortYear;
         }
     }
 
-    public static Calendar dateConvert(String input) {
+    public Calendar dateConvert(String input) {
         String[] dateAndTime = input.split(", ");
         String date = dateAndTime[0];
         String time = dateAndTime[1];
@@ -57,17 +57,33 @@ public class SqlRuParse {
         int year;
         Calendar javaDate = Calendar.getInstance();
         if (date.equals("сегодня") || date.equals("вчера")) {
-            month = MONTHS.get(date);
-            day = Calendar.DATE;
-            year = Calendar.YEAR;
+            month = javaDate.get(Calendar.MONTH);
+            day = months.get(date);
+            year = javaDate.get(Calendar.YEAR);
             javaDate.set(year, month, day, hour, minute);
             return javaDate;
         }
         String[] dayMonthYear = date.split(" ");
         day = Integer.parseInt(dayMonthYear[0]);
-        month = MONTHS.get(dayMonthYear[1]);
-        year = Integer.parseInt(dayMonthYear[2]);
+        month = months.get(dayMonthYear[1]);
+        year = getTrueYear(Integer.parseInt(dayMonthYear[2]), javaDate);
         javaDate.set(year, month, day, hour, minute);
         return javaDate;
+    }
+
+    public static void main(String[] args) throws Exception {
+        SqlRuParse sqlRuParse = new SqlRuParse();
+        Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
+        Elements row = doc.select(".postslisttopic");
+        Elements dates = doc.select(".altCol");
+        for (int i = 0, k = 1; i < row.size(); i++, k += 2) {
+            Element tdPosts = row.get(i);
+            Element href = tdPosts.child(0);
+            Element date = dates.get(k);
+            System.out.println(href.attr("href"));
+            System.out.println(href.text());
+            Calendar javaDate = sqlRuParse.dateConvert(date.text());
+            System.out.println(javaDate.getTime());
+        }
     }
 }
