@@ -14,7 +14,9 @@ public class Post {
 
     private String authorURL;
 
-    private Calendar date;
+    private Calendar dateOfCreation;
+
+    private Calendar dateOfLatestComment;
 
     public String getVacancyName() {
         return vacancyName;
@@ -56,11 +58,19 @@ public class Post {
         this.authorURL = authorURL;
     }
 
-    public Calendar getDate() {
-        return date;
+    public Calendar getDateOfCreation() {
+        return dateOfCreation;
     }
 
-    public void setDate(Calendar date) {
-        this.date = date;
+    public void setDateOfCreation(Calendar dateOfCreation) {
+        this.dateOfCreation = dateOfCreation;
+    }
+
+    public Calendar getDateOfLatestComment() {
+        return dateOfLatestComment;
+    }
+
+    public void setDateOfLatestComment(Calendar dateOfLatestComment) {
+        this.dateOfLatestComment = dateOfLatestComment;
     }
 }
