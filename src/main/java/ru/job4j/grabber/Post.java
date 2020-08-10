@@ -3,6 +3,8 @@ package ru.job4j.grabber;
 import java.util.Calendar;
 
 public class Post {
+    
+    private String id;
 
     private String vacancyName;
 
@@ -17,6 +19,14 @@ public class Post {
     private Calendar dateOfCreation;
 
     private Calendar dateOfLatestComment;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getVacancyName() {
         return vacancyName;
