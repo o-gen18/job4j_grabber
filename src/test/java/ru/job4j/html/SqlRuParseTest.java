@@ -11,7 +11,7 @@ public class SqlRuParseTest {
     private final SqlRuParse sqlRuParse = new SqlRuParse();
 
     @Test
-    public void whenDate15Jan2020At17_35ThenReturnCalendar() {
+    public void whenDate15Jan2020At1735ThenReturnCalendar() {
         String date = "15 янв 20, 17:35";
         Calendar result = sqlRuParse.dateConvert(date);
         Calendar expected = Calendar.getInstance();
@@ -20,7 +20,7 @@ public class SqlRuParseTest {
     }
 
     @Test
-    public void whenDate22Aug1975At3_55ThenReturnCalendar() {
+    public void whenDate22Aug1975At355ThenReturnCalendar() {
         String date = "22 авг 75, 3:55";
         Calendar result = sqlRuParse.dateConvert(date);
         Calendar expected = Calendar.getInstance();
@@ -29,7 +29,7 @@ public class SqlRuParseTest {
     }
 
     @Test
-    public void whenTodayAt12_01ThenReturnCalendar() {
+    public void whenTodayAt1201ThenReturnCalendar() {
         String date = "сегодня, 12:01";
         Calendar result = sqlRuParse.dateConvert(date);
         Calendar expected = Calendar.getInstance();
@@ -39,7 +39,7 @@ public class SqlRuParseTest {
     }
 
     @Test
-    public void whenYesterdayAt14_21ThenReturnCalendar() {
+    public void whenYesterdayAt1421ThenReturnCalendar() {
         String date = "вчера, 14:21";
         Calendar result = sqlRuParse.dateConvert(date);
         Calendar expected = Calendar.getInstance();

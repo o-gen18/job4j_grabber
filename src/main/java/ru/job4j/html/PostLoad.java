@@ -17,33 +17,31 @@ public class PostLoad {
                         + "lidy-be-fe-senior-cistemnye-analitiki-qa-i-devops-moskva-do-200t").get();
         Elements descs = doc.select(".msgBody");
         Elements msgFooter = doc.select(".msgFooter");
-
-        for (int i = 0, k = 0; i < descs.size(); i += 2, k++) {
-
+//цикл убрал, так как нужен только первый элемент страницы, остальные - это комметарии к посту.
             Post post = new Post();
-            Element descUneven = descs.get(i + 1);
+            Element descUneven = descs.get(1);
             post.setVacancyDesc(descUneven.text());
 
-            Element descEven = descs.get(i);
+            Element descEven = descs.get(0);
             Element author = descEven.child(0);
             String url = author.attr("href");
             String name = author.text();
             post.setAuthorName(name);
             post.setAuthorURL(url);
 
-            String dateAndStuff = msgFooter.get(k).text();
+            String dateAndStuff = msgFooter.get(0).text();
             int endingOfDate = dateAndStuff.indexOf(" [");
             String date = dateAndStuff.substring(0, endingOfDate);
             System.out.println(date);
-            post.setDate(sqlRuParse.dateConvert(date));
+            post.setDateOfCreation(sqlRuParse.dateConvert(date));
             posts.add(post);
 
-            Post saved = posts.get(k);
+            Post saved = posts.get(0);
             System.out.println("Автор: " + saved.getAuthorName());
             System.out.println("Информация об авторе: " + saved.getAuthorURL());
             System.out.println("Описание вакансии: " + saved.getVacancyDesc());
-            System.out.println("Дата публикации: " + saved.getDate().getTime());
+            System.out.println("Дата публикации: " + saved.getDateOfCreation().getTime());
             System.out.println();
-        }
+
     }
 }
