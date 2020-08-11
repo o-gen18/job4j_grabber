@@ -12,9 +12,12 @@ import java.util.Map;
 
 public class SqlRuGrab implements Parse {
 
+    private final boolean onlyJava;
+
     private final Map<String, Integer> months = new java.util.HashMap<>();
 
-    public SqlRuGrab() {
+    public SqlRuGrab(boolean onlyJava) {
+        this.onlyJava = onlyJava;
         fillingMap();
     }
 
@@ -90,6 +93,9 @@ public class SqlRuGrab implements Parse {
                     Element dateOfLatestComment = dates.get(k);
                     String vacancyURL = href.attr("href");
                     String vacancyName = href.text();
+                    if (onlyJava && !vacancyName.toLowerCase().contains("java")) {
+                        continue;
+                    }
                     Post post = detail(vacancyURL);
                     Calendar javaDate = dateConvert(dateOfLatestComment.text());
                     post.setDateOfLatestComment(javaDate);
