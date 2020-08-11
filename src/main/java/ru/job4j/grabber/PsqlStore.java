@@ -32,11 +32,10 @@ public class PsqlStore implements Store, AutoCloseable {
 
     @Override
     public void save(Post post) {
-        try {
-            PreparedStatement st = conn.prepareStatement(
-                    "insert into post("
-                            + "name, text, link, created, author, author_URL, last_commented)"
-                    + "values(?, ?, ?, ?, ?, ?, ?)");
+        try (PreparedStatement st = conn.prepareStatement(
+                "insert into post("
+                        + "name, text, link, created, author, author_URL, last_commented)"
+                        + "values(?, ?, ?, ?, ?, ?, ?)")) {
             st.setString(1, post.getVacancyName());
             st.setString(2, post.getVacancyDesc());
             st.setString(3, post.getVacancyURL());
@@ -53,11 +52,11 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public List<Post> getAll() {
         List<Post> list = new ArrayList<>();
-        try {
-            Statement st = conn.createStatement();
+        try (Statement st = conn.createStatement()) {
             ResultSet rs = st.executeQuery("select * from post");
             while (rs.next()) {
                 Post post = new Post();
+                post.setId(String.valueOf((rs.getInt("id"))));
                 post.setVacancyName(rs.getString("name"));
                 post.setVacancyDesc(rs.getString("text"));
                 post.setVacancyURL(rs.getString("link"));
@@ -76,8 +75,7 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public Post findById(String id) {
         Post post = null;
-        try {
-            PreparedStatement st = conn.prepareStatement("select * from post where id = ?");
+        try (PreparedStatement st = conn.prepareStatement("select * from post where id = ?")) {
             st.setInt(1, Integer.parseInt(id));
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
