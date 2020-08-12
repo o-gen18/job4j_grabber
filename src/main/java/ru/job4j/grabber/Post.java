@@ -83,4 +83,17 @@ public class Post {
     public void setDateOfLatestComment(Calendar dateOfLatestComment) {
         this.dateOfLatestComment = dateOfLatestComment;
     }
+
+    @Override
+    public String toString() {
+        return "id in database: " + id + System.lineSeparator()
+                + "Name of vacancy: " + vacancyName + System.lineSeparator()
+                + "URL of vacancy: " + vacancyURL + System.lineSeparator()
+                + "Описание вакансии: " + vacancyDesc + System.lineSeparator()
+                + "Created: " + dateOfCreation.getTime() + System.lineSeparator()
+                + "Author's name: " + authorName + System.lineSeparator()
+                + "Author's info: " + authorURL + System.lineSeparator()
+                + "Date of latest comment: "
+                + dateOfLatestComment.getTime() + System.lineSeparator();
+    }
 }

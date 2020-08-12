@@ -112,7 +112,7 @@ public class PsqlStore implements Store, AutoCloseable {
         }
 
         PsqlStore psqlStore = new PsqlStore(cfg);
-        SqlRuGrab sqlRuGrab = new SqlRuGrab();
+        SqlRuGrab sqlRuGrab = new SqlRuGrab(lang -> lang.toLowerCase().contains("java"));
         List<Post> posts = sqlRuGrab.list("https://www.sql.ru/forum/job-offers/");
         Post fifthPost = posts.get(4);
         Post tenthPost = posts.get(10);
@@ -120,23 +120,10 @@ public class PsqlStore implements Store, AutoCloseable {
         psqlStore.save(tenthPost);
         Post fifth = psqlStore.findById("1");
         Post tenth = psqlStore.findById("2");
-        psqlStore.showInfo(fifth);
-        psqlStore.showInfo(tenth);
+        System.out.println(fifth.toString());
+        System.out.println(tenth.toString());
 
         List<Post> list = psqlStore.getAll();
-        list.forEach(psqlStore::showInfo);
-    }
-
-    public void showInfo(Post post) {
-        System.out.println("id в базе: " + post.getId());
-        System.out.println("Название вакансии: " + post.getVacancyName());
-        System.out.println("URL вакансии: " + post.getVacancyURL());
-        System.out.println("Описание вакансии: " + post.getVacancyDesc());
-        System.out.println("Дата создания: " + post.getDateOfCreation().getTime());
-        System.out.println("Имя автора: " + post.getAuthorName());
-        System.out.println("Информация об авторе: " + post.getAuthorURL());
-        System.out.println("Дата последнего комментария к вакансии: "
-                + post.getDateOfLatestComment().getTime());
-        System.out.println();
+        list.forEach(System.out::println);
     }
 }
