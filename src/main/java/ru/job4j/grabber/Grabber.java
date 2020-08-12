@@ -5,6 +5,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.function.Predicate;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -66,7 +67,7 @@ public class Grabber implements Grab {
         grab.cfg();
         Scheduler scheduler = grab.scheduler();
         Store store = grab.store();
-        boolean onlyJava = true;
-        grab.init(new SqlRuGrab(onlyJava), store, scheduler);
+        Predicate<String> language = vacancyName -> vacancyName.toLowerCase().contains("java");
+        grab.init(new SqlRuGrab(language), store, scheduler);
     }
 }

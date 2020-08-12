@@ -9,15 +9,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class SqlRuGrab implements Parse {
 
-    private final boolean onlyJava;
+    private Predicate<String> language;
 
     private final Map<String, Integer> months = new java.util.HashMap<>();
 
-    public SqlRuGrab(boolean onlyJava) {
-        this.onlyJava = onlyJava;
+    public SqlRuGrab(Predicate<String> language) {
+        this.language = language;
         fillingMap();
     }
 
@@ -93,7 +94,7 @@ public class SqlRuGrab implements Parse {
                     Element dateOfLatestComment = dates.get(k);
                     String vacancyURL = href.attr("href");
                     String vacancyName = href.text();
-                    if (onlyJava && !vacancyName.toLowerCase().contains("java")) {
+                    if (!language.test(vacancyName)) {
                         continue;
                     }
                     Post post = detail(vacancyURL);
