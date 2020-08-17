@@ -1,6 +1,11 @@
 package ru.job4j.grabber;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,6 +13,8 @@ import java.util.List;
 import java.util.Properties;
 
 public class PsqlStore implements Store, AutoCloseable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PsqlStore.class.getName());
 
     private Connection conn;
 
@@ -22,6 +29,17 @@ public class PsqlStore implements Store, AutoCloseable {
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
+        createTable();
+    }
+
+    private void createTable() {
+        try (Statement st = conn.createStatement()) {
+            String sql = String.join(
+                    "", Files.readAllLines(Path.of("./db", "Create_table_post.sql")));
+            st.execute(sql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private Calendar convertToCalendar(Timestamp ts) {
@@ -32,6 +50,7 @@ public class PsqlStore implements Store, AutoCloseable {
 
     @Override
     public void save(Post post) {
+        LOG.debug("Saving post with name: {}", post.getVacancyName());
         try (PreparedStatement st = conn.prepareStatement(
                 "insert into post("
                         + "name, text, link, created, author, author_URL, last_commented)"
@@ -44,13 +63,16 @@ public class PsqlStore implements Store, AutoCloseable {
             st.setString(6, post.getAuthorURL());
             st.setTimestamp(7, new Timestamp(post.getDateOfLatestComment().getTime().getTime()));
             st.executeUpdate();
+            LOG.debug("Query executed");
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        LOG.debug("Saving complete");
     }
 
     @Override
     public List<Post> getAll() {
+        LOG.debug("Retrieving posts from database");
         List<Post> list = new ArrayList<>();
         try (Statement st = conn.createStatement()) {
             ResultSet rs = st.executeQuery("select * from post");
@@ -74,6 +96,7 @@ public class PsqlStore implements Store, AutoCloseable {
 
     @Override
     public Post findById(String id) {
+        LOG.debug("Finding by id");
         Post post = null;
         try (PreparedStatement st = conn.prepareStatement("select * from post where id = ?")) {
             st.setInt(1, Integer.parseInt(id));
@@ -92,6 +115,7 @@ public class PsqlStore implements Store, AutoCloseable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        LOG.debug("Found: {}", post);
         return post;
     }
 
@@ -112,8 +136,8 @@ public class PsqlStore implements Store, AutoCloseable {
         }
 
         PsqlStore psqlStore = new PsqlStore(cfg);
-        SqlRuGrab sqlRuGrab = new SqlRuGrab(lang -> lang.toLowerCase().contains("java"));
-        List<Post> posts = sqlRuGrab.list("https://www.sql.ru/forum/job-offers/");
+        SqlRuParse sqlRuParse = new SqlRuParse(lang -> lang.toLowerCase().contains("java"));
+        List<Post> posts = sqlRuParse.list("https://www.sql.ru/forum/job-offers/");
         Post fifthPost = posts.get(4);
         Post tenthPost = posts.get(10);
         psqlStore.save(fifthPost);

@@ -4,6 +4,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,13 +13,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public class SqlRuGrab implements Parse {
+public class SqlRuParse implements Parse {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SqlRuParse.class.getName());
 
     private Predicate<String> language;
 
     private final Map<String, Integer> months = new java.util.HashMap<>();
 
-    public SqlRuGrab(Predicate<String> language) {
+    public SqlRuParse(Predicate<String> language) {
         this.language = language;
         fillingMap();
     }
@@ -80,12 +84,14 @@ public class SqlRuGrab implements Parse {
     @Override
     public List<Post> list(String link)  {
         List<Post> posts = new ArrayList<>();
+        LOG.debug("Parsing: {}", link);
         try {
             for (int p = 1; p <= 5; p++) {
                 String page = String.valueOf(p);
                 String url = link.concat(page);
                 Document doc = Jsoup.connect(url).get();
                 Elements row = doc.select(".postslisttopic");
+                LOG.debug("Retrieved {} rows", row.size());
                 Elements dates = doc.select(".altCol");
                 for (int i = 0, k = 1; i < row.size(); i++, k += 2) {
 
@@ -94,6 +100,7 @@ public class SqlRuGrab implements Parse {
                     Element dateOfLatestComment = dates.get(k);
                     String vacancyURL = href.attr("href");
                     String vacancyName = href.text();
+                    LOG.debug("Parsing vacancy: {}", vacancyName);
                     if (!language.test(vacancyName)) {
                         continue;
                     }
@@ -105,6 +112,7 @@ public class SqlRuGrab implements Parse {
                     posts.add(post);
                 }
             }
+            LOG.debug("Parsing completed");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -132,7 +140,9 @@ public class SqlRuGrab implements Parse {
             String dateAndStuff = msgFooter.get(0).text();
             int endingOfDate = dateAndStuff.indexOf(" [");
             String date = dateAndStuff.substring(0, endingOfDate);
-            post.setDateOfCreation(dateConvert(date));
+            Calendar javaDate = dateConvert(date);
+            post.setDateOfCreation(javaDate);
+            LOG.debug("Post was created on: {}", javaDate.getTime());
         } catch (Exception e) {
             e.printStackTrace();
         }

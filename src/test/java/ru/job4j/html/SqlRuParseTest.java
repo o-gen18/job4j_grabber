@@ -1,6 +1,7 @@
 package ru.job4j.html;
 
 import org.junit.Test;
+import ru.job4j.grabber.SqlRuParse;
 
 import java.util.Calendar;
 
@@ -8,7 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class SqlRuParseTest {
-    private final SqlRuParse sqlRuParse = new SqlRuParse();
+    private final SqlRuParse sqlRuParse = new SqlRuParse(vacancyName -> vacancyName.toLowerCase().contains("java"));
 
     @Test
     public void whenDate15Jan2020At1735ThenReturnCalendar() {
