@@ -1,6 +1,7 @@
-package ru.job4j.grabber;
+package ru.job4j.model;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 public class Post {
     
@@ -19,6 +20,19 @@ public class Post {
     private Calendar dateOfCreation;
 
     private Calendar dateOfLatestComment;
+
+    public Post() { }
+
+    public Post(String vacancyName, String vacancyURL, String vacancyDesc,
+                 String authorName, String authorURL, Calendar created, Calendar latestComment) {
+        this.vacancyName = vacancyName;
+        this.vacancyURL = vacancyURL;
+        this.vacancyDesc = vacancyDesc;
+        this.authorName = authorName;
+        this.authorURL = authorURL;
+        this.dateOfCreation = created;
+        this.dateOfLatestComment = latestComment;
+    }
 
     public String getId() {
         return id;
@@ -95,5 +109,30 @@ public class Post {
                 + "Author's info: " + authorURL + System.lineSeparator()
                 + "Date of latest comment: "
                 + dateOfLatestComment.getTime() + System.lineSeparator();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Post post = (Post) o;
+        return Objects.equals(id, post.id)
+                && Objects.equals(vacancyName, post.vacancyName)
+                && Objects.equals(vacancyURL, post.vacancyURL)
+                && Objects.equals(vacancyDesc, post.vacancyDesc)
+                && Objects.equals(authorName, post.authorName)
+                && Objects.equals(authorURL, post.authorURL)
+                && Objects.equals(dateOfCreation, post.dateOfCreation)
+                && Objects.equals(dateOfLatestComment, post.dateOfLatestComment);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, vacancyName, vacancyURL, vacancyDesc,
+                authorName, authorURL, dateOfCreation, dateOfLatestComment);
     }
 }

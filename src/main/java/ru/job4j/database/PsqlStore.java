@@ -1,7 +1,9 @@
-package ru.job4j.grabber;
+package ru.job4j.database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.job4j.model.Post;
+import ru.job4j.parser.SqlRuParse;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -32,6 +34,10 @@ public class PsqlStore implements Store, AutoCloseable {
         createTable();
     }
 
+    public PsqlStore(Connection connection) {
+        this.conn = connection;
+    }
+
     private void createTable() {
         try (Statement st = conn.createStatement()) {
             String sql = String.join(
@@ -54,7 +60,8 @@ public class PsqlStore implements Store, AutoCloseable {
         try (PreparedStatement st = conn.prepareStatement(
                 "insert into post("
                         + "name, text, link, created, author, author_URL, last_commented)"
-                        + "values(?, ?, ?, ?, ?, ?, ?)")) {
+                        + "values(?, ?, ?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS)) {
             st.setString(1, post.getVacancyName());
             st.setString(2, post.getVacancyDesc());
             st.setString(3, post.getVacancyURL());
@@ -64,6 +71,13 @@ public class PsqlStore implements Store, AutoCloseable {
             st.setTimestamp(7, new Timestamp(post.getDateOfLatestComment().getTime().getTime()));
             st.executeUpdate();
             LOG.debug("Query executed");
+            LOG.debug("Assigning generated key to the persisted post...");
+            try (ResultSet resultSet = st.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    post.setId(resultSet.getString(1));
+                    LOG.debug("The key has been assigned");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

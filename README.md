@@ -17,3 +17,4 @@ This project represents a simple HTML grabber.
 - Quartz library for scheduling
 - Slf4j for logging
 
+![img](./img/Sql_ru_parsed.png)
