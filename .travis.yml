@@ -1,6 +1,12 @@
 language: java
 jdk:
-  - openjdk14
+  - openjdk15
+
+services:
+  - postgresql
+
+before_install:
+  - psql -c 'create database grabber;' -U postgres
 
 sudo: false
 
